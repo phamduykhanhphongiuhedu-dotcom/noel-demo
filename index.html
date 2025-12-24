@@ -8,64 +8,32 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root { --gold: #ffd700; --red: #d41414; --dark: #000428; }
-        
-        body { 
-            margin: 0; background: var(--dark); color: white; 
-            font-family: 'Montserrat', sans-serif; overflow-x: hidden; text-align: center; 
-        }
-
-        #snow { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; } /* Quan trọng: pointer-events: none để không chặn chuột */
-
+        body { margin: 0; background: var(--dark); color: white; font-family: 'Montserrat', sans-serif; overflow-x: hidden; text-align: center; }
+        #snow { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; }
         .container { position: relative; z-index: 10; max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
-        
         h1 { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.5); }
-
         .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 40px 0; }
-        
         .card { height: 480px; perspective: 1000px; position: relative; }
         .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; }
-        
-        /* Class lật thẻ */
         .card.flipped .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; border: 2px solid var(--gold); overflow: hidden; }
+        .card-front { background: rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; box-sizing: border-box; }
+        .card-front input { padding: 12px 15px; border-radius: 25px; border: 2px solid var(--gold); width: 85%; background: white; color: #333; text-align: center; margin: 20px 0; font-size: 1rem; }
+        .btn-unlock { background: var(--red); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-weight: 600; }
+        .card-back { transform: rotateY(180deg); background: #001; }
         
-        .card-front, .card-back { 
-            position: absolute; width: 100%; height: 100%; 
-            backface-visibility: hidden; border-radius: 20px; 
-            border: 2px solid var(--gold); overflow: hidden;
+        /* Cố định kích thước ảnh để không bị lỗi hiển thị */
+        .card-back img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* Giúp ảnh không bị méo */
+            display: block;
         }
 
-        /* Mặt trước có ô nhập liệu */
-        .card-front { 
-            background: rgba(255,255,255,0.1); 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            padding: 25px; box-sizing: border-box; z-index: 2;
-        }
-
-        .card-front input { 
-            padding: 12px 15px; border-radius: 25px; border: 2px solid var(--gold); 
-            width: 85%; background: white; color: #333; text-align: center; 
-            margin: 20px 0; font-size: 1rem; position: relative; z-index: 30; /* Đưa ô nhập lên cao nhất */
-        }
-
-        .btn-unlock { 
-            background: var(--red); color: white; border: none; 
-            padding: 12px 30px; border-radius: 25px; cursor: pointer; 
-            font-weight: 600; font-size: 1rem; transition: 0.3s;
-        }
-
-        .card-back { transform: rotateY(180deg); background: black; }
-        .card-back img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Hộp quà cuối cùng */
         #final-gift { margin-top: 50px; display: none; }
-        .gift-box { font-size: 100px; cursor: pointer; transition: 0.3s; display: inline-block; animation: shake 1s infinite; }
+        .gift-box { font-size: 100px; cursor: pointer; display: inline-block; animation: shake 1s infinite; }
         @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
-
-        /* Modal lời chúc */
-        .modal { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
-            display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; 
-        }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
         .modal-content { background: white; color: #333; padding: 40px; border-radius: 25px; max-width: 450px; }
     </style>
 </head>
@@ -76,19 +44,19 @@
 <div class="container">
     <p style="letter-spacing: 2px;">GIÁNG SINH 2025</p>
     <h1>The Memory Challenge</h1>
-    <p>Nhập đúng đáp án vào ô trắng để mở ảnh nhé cốt!</p>
+    <p>Giải mã 3 kỷ niệm để nhận quà nhé!</p>
 
     <div class="gallery">
         <div class="card" id="card-1">
             <div class="card-inner">
                 <div class="card-front">
                     <span style="font-size: 3rem;">📜</span>
-                    <p>Giải thưởng Nghiên cứu khoa học 2025 của chúng mình là lần thứ mấy?</p>
+                    <p>Giải thưởng NCKH 2025 là lần thứ mấy?</p>
                     <input type="text" id="ans-1" placeholder="Nhập số...">
                     <button class="btn-unlock" onclick="checkAnswer(1, '6')">Giải mã</button>
                 </div>
                 <div class="card-back">
-                    <img src="z7359898596073_15b805cd78c74c271d25501f7cf09984.jpg">
+                    <img src="z7359898596073_15b805cd78c74c271d25501f7cf09984.jpg" onerror="this.src='https://picsum.photos/400/600?sig=1'">
                 </div>
             </div>
         </div>
@@ -97,12 +65,12 @@
             <div class="card-inner">
                 <div class="card-front">
                     <span style="font-size: 3rem;">🌊</span>
-                    <p>Bông hoa bạn cài trên tóc trong ảnh ở biển tên là gì?</p>
+                    <p>Hoa cài trên tóc ở biển tên là gì?</p>
                     <input type="text" id="ans-2" placeholder="Hoa gì nhỉ?">
                     <button class="btn-unlock" onclick="checkAnswer(2, 'Hoa sứ')">Mở khóa</button>
                 </div>
                 <div class="card-back">
-                    <img src="z7359898526021_f6bfa468476d02c307178b0f887e920e.jpg">
+                    <img src="z7359898526021_f6bfa468476d02c307178b0f887e920e.jpg" onerror="this.src='https://picsum.photos/400/600?sig=2'">
                 </div>
             </div>
         </div>
@@ -111,12 +79,12 @@
             <div class="card-inner">
                 <div class="card-front">
                     <span style="font-size: 3rem;">🎓</span>
-                    <p>Tên khoa của tụi mình là gì? (Ghi đầy đủ trên giấy)</p>
-                    <input type="text" id="ans-3" placeholder="Khoa Thương mại - ...">
+                    <p>Tên khoa của tụi mình là gì?</p>
+                    <input type="text" id="ans-3" placeholder="Ghi đầy đủ có dấu...">
                     <button class="btn-unlock" onclick="checkAnswer(3, 'Thương mại - Du lịch')">Xem ảnh</button>
                 </div>
                 <div class="card-back">
-                    <img src="z7359898573104_1bdcab24ce0eb48479d4e8b71d9b2fad.jpg">
+                    <img src="anh3.jpg" onerror="this.src='https://picsum.photos/400/600?sig=3'">
                 </div>
             </div>
         </div>
@@ -131,30 +99,26 @@
 <div class="modal" id="wishModal">
     <div class="modal-content">
         <h2 style="font-family: 'Dancing Script'; color: var(--red); font-size: 2.5rem;">Merry Christmas!</h2>
-        <p>Chúc cốt một mùa Noel ấm áp, luôn xinh đẹp và đạt kết quả cao trong học tập nhé. Mãi là bạn tốt của nhau!</p>
-        <button class="btn-unlock" onclick="document.getElementById('wishModal').style.display='none'">Yêu cốt! ❤️</button>
+        <p>Chúc cốt một mùa Noel ấm áp, luôn xinh đẹp và đạt kết quả cao trong học tập nhé. Mãi bên nhau! ❤️</p>
+        <button class="btn-unlock" onclick="document.getElementById('wishModal').style.display='none'">Nhận lời chúc ❤️</button>
     </div>
 </div>
 
 <script>
     let solveCount = 0;
-
     function checkAnswer(id, correct) {
         const userAns = document.getElementById('ans-' + id).value.trim();
         if (userAns.toLowerCase() === correct.toLowerCase()) {
             document.getElementById('card-' + id).classList.add('flipped');
             solveCount++;
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-
             if (solveCount === 3) {
                 setTimeout(() => {
                     document.getElementById('final-gift').style.display = 'block';
                     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                }, 1000);
+                }, 800);
             }
-        } else {
-            alert("Sai rồi nè! Nhớ lại chút đi mà.");
-        }
+        } else { alert("Sai rồi cốt ơi! Nhớ lại xem nào."); }
     }
 
     function showFinal() {
@@ -162,7 +126,6 @@
         confetti({ particleCount: 400, spread: 100, origin: { y: 0.5 } });
     }
 
-    // Tuyết rơi không chặn chuột
     const canvas = document.getElementById('snow');
     const ctx = canvas.getContext('2d');
     let w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight;
@@ -176,6 +139,5 @@
     }
     draw();
 </script>
-
 </body>
 </html>
