@@ -3,183 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christmas Gift Surprise | For Chí Cốt</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Noel Surprise | IUH Memories</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
-        :root {
-            --gold: #ffd700;
-            --glass: rgba(255, 255, 255, 0.1);
-        }
-
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; font-family: 'Montserrat', sans-serif;
-            background: radial-gradient(circle at center, #004e92, #000428);
-        }
-
-        #snow-canvas { position: absolute; top: 0; left: 0; z-index: 1; }
-
-        .main-wrapper {
-            position: relative; z-index: 10;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            height: 100vh; color: white;
-        }
-
-        h1 {
-            font-family: 'Dancing Script', cursive;
-            font-size: 4rem; color: var(--gold);
-            margin-bottom: 10px; text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .instruction { font-size: 1.2rem; margin-bottom: 40px; opacity: 0.8; letter-spacing: 2px; }
-
-        /* Khu vực hộp quà */
-        .gift-container {
-            display: flex; gap: 30px; justify-content: center; flex-wrap: wrap;
-        }
-
-        .gift-box {
-            width: 120px; height: 120px;
-            background: var(--glass);
-            border: 2px solid var(--gold);
-            border-radius: 15px;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 3rem; cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        .gift-box:hover {
-            transform: scale(1.1) rotate(5deg);
-            background: rgba(255, 215, 0, 0.2);
-            box-shadow: 0 0 30px var(--gold);
-        }
-
-        .gift-box.opened {
-            transform: scale(0); opacity: 0; pointer-events: none;
-        }
-
-        /* Lời chúc hiện ra */
-        #wish-display {
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0.5);
-            background: rgba(255, 255, 255, 0.95);
-            color: #333; padding: 40px; border-radius: 20px;
-            text-align: center; max-width: 450px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            display: none; z-index: 100;
-            animation: popIn 0.5s forwards;
-        }
-
-        @keyframes popIn {
-            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-
-        #wish-display h2 { font-family: 'Dancing Script', cursive; color: #d41414; font-size: 2.5rem; margin: 0; }
-        #wish-display p { font-family: 'Playfair Display', serif; font-size: 1.3rem; line-height: 1.6; margin: 20px 0; }
+        :root { --gold: #ffd700; --red: #d41414; --dark: #000428; }
         
-        .close-btn {
-            background: #d41414; color: white; border: none; padding: 10px 25px;
-            border-radius: 20px; cursor: pointer; font-weight: bold;
+        body { 
+            margin: 0; background: var(--dark); color: white; 
+            font-family: 'Montserrat', sans-serif; overflow-x: hidden; text-align: center; 
         }
 
-        .signature-bottom { margin-top: 50px; font-family: 'Dancing Script', cursive; font-size: 1.5rem; color: var(--gold); }
+        #snow { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; } /* Quan trọng: pointer-events: none để không chặn chuột */
+
+        .container { position: relative; z-index: 10; max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+        
+        h1 { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 40px 0; }
+        
+        .card { height: 480px; perspective: 1000px; position: relative; }
+        .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; }
+        
+        /* Class lật thẻ */
+        .card.flipped .card-inner { transform: rotateY(180deg); }
+        
+        .card-front, .card-back { 
+            position: absolute; width: 100%; height: 100%; 
+            backface-visibility: hidden; border-radius: 20px; 
+            border: 2px solid var(--gold); overflow: hidden;
+        }
+
+        /* Mặt trước có ô nhập liệu */
+        .card-front { 
+            background: rgba(255,255,255,0.1); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            padding: 25px; box-sizing: border-box; z-index: 2;
+        }
+
+        .card-front input { 
+            padding: 12px 15px; border-radius: 25px; border: 2px solid var(--gold); 
+            width: 85%; background: white; color: #333; text-align: center; 
+            margin: 20px 0; font-size: 1rem; position: relative; z-index: 30; /* Đưa ô nhập lên cao nhất */
+        }
+
+        .btn-unlock { 
+            background: var(--red); color: white; border: none; 
+            padding: 12px 30px; border-radius: 25px; cursor: pointer; 
+            font-weight: 600; font-size: 1rem; transition: 0.3s;
+        }
+
+        .card-back { transform: rotateY(180deg); background: black; }
+        .card-back img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Hộp quà cuối cùng */
+        #final-gift { margin-top: 50px; display: none; }
+        .gift-box { font-size: 100px; cursor: pointer; transition: 0.3s; display: inline-block; animation: shake 1s infinite; }
+        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
+
+        /* Modal lời chúc */
+        .modal { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+            display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; 
+        }
+        .modal-content { background: white; color: #333; padding: 40px; border-radius: 25px; max-width: 450px; }
     </style>
 </head>
 <body>
 
-    <canvas id="snow-canvas"></canvas>
+<canvas id="snow"></canvas>
 
-    <div class="main-wrapper">
-        <p class="instruction">Giáng Sinh dành riêng cho cốt của tao</p>
-        <h1>Merry Christmas</h1>
-        <p class="instruction">Chạm vào hộp quà để nhận điều ước ✨</p>
+<div class="container">
+    <p style="letter-spacing: 2px;">GIÁNG SINH 2025</p>
+    <h1>The Memory Challenge</h1>
+    <p>Nhập đúng đáp án vào ô trắng để mở ảnh nhé cốt!</p>
 
-        <div class="gift-container">
-            <div class="gift-box" onclick="openGift(this, 0)">🎁</div>
-            <div class="gift-box" onclick="openGift(this, 1)">🎁</div>
-            <div class="gift-box" onclick="openGift(this, 2)">🎁</div>
+    <div class="gallery">
+        <div class="card" id="card-1">
+            <div class="card-inner">
+                <div class="card-front">
+                    <span style="font-size: 3rem;">📜</span>
+                    <p>Giải thưởng Nghiên cứu khoa học 2025 của chúng mình là lần thứ mấy?</p>
+                    <input type="text" id="ans-1" placeholder="Nhập số...">
+                    <button class="btn-unlock" onclick="checkAnswer(1, '6')">Giải mã</button>
+                </div>
+                <div class="card-back">
+                    <img src="z7359898596073_15b805cd78c74c271d25501f7cf09984.jpg">
+                </div>
+            </div>
         </div>
 
-        <div class="signature-bottom">Khánh Phong kính gửi</div>
+        <div class="card" id="card-2">
+            <div class="card-inner">
+                <div class="card-front">
+                    <span style="font-size: 3rem;">🌊</span>
+                    <p>Bông hoa bạn cài trên tóc trong ảnh ở biển tên là gì?</p>
+                    <input type="text" id="ans-2" placeholder="Hoa gì nhỉ?">
+                    <button class="btn-unlock" onclick="checkAnswer(2, 'Hoa sứ')">Mở khóa</button>
+                </div>
+                <div class="card-back">
+                    <img src="z7359898526021_f6bfa468476d02c307178b0f887e920e.jpg">
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="card-3">
+            <div class="card-inner">
+                <div class="card-front">
+                    <span style="font-size: 3rem;">🎓</span>
+                    <p>Tên khoa của tụi mình là gì? (Ghi đầy đủ trên giấy)</p>
+                    <input type="text" id="ans-3" placeholder="Khoa Thương mại - ...">
+                    <button class="btn-unlock" onclick="checkAnswer(3, 'Thương mại - Du lịch')">Xem ảnh</button>
+                </div>
+                <div class="card-back">
+                    <img src="z7359898573104_1bdcab24ce0eb48479d4e8b71d9b2fad.jpg">
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="wish-display">
-        <div style="font-size: 3rem;">🌟</div>
-        <h2 id="wish-title">Lời Chúc An Lành</h2>
-        <p id="wish-text"></p>
-        <button class="close-btn" onclick="closeWish()">Nhận lời chúc này ❤️</button>
+    <div id="final-gift">
+        <h2 style="color: var(--gold); font-family: 'Dancing Script', cursive;">Tuyệt vời! Mở quà thôi!</h2>
+        <div class="gift-box" onclick="showFinal()">🎁</div>
     </div>
+</div>
 
-    <iframe src="https://www.youtube.com/embed/g-OfAY_UfQc?autoplay=1&mute=0" style="display:none"></iframe>
+<div class="modal" id="wishModal">
+    <div class="modal-content">
+        <h2 style="font-family: 'Dancing Script'; color: var(--red); font-size: 2.5rem;">Merry Christmas!</h2>
+        <p>Chúc cốt một mùa Noel ấm áp, luôn xinh đẹp và đạt kết quả cao trong học tập nhé. Mãi là bạn tốt của nhau!</p>
+        <button class="btn-unlock" onclick="document.getElementById('wishModal').style.display='none'">Yêu cốt! ❤️</button>
+    </div>
+</div>
 
-    <script>
-        const wishes = [
-            "Chúc cốt luôn xinh trai/đẹp gái, rạng rỡ và giữ mãi nụ cười tỏa nắng trên môi. Mong mọi điều may mắn sẽ luôn đồng hành cùng cốt!",
-            "Chúc cốt có một mùa Giáng Sinh ấm áp bên gia đình. Hy vọng điểm các môn sắp tới của cốt tại IUH sẽ đạt điểm tuyệt đối nhé!",
-            "Giáng sinh này, mong cốt nhận được thật nhiều quà và tình cảm yêu thương. Chúc mọi giấc mơ của cốt đều sớm thành hiện thực!"
-        ];
+<script>
+    let solveCount = 0;
 
-        function openGift(element, index) {
-            // Hiệu ứng pháo hoa
-            confetti({
-                particleCount: 100, spread: 70, origin: { y: 0.6 },
-                colors: ['#ffd700', '#ff0000', '#ffffff']
-            });
+    function checkAnswer(id, correct) {
+        const userAns = document.getElementById('ans-' + id).value.trim();
+        if (userAns.toLowerCase() === correct.toLowerCase()) {
+            document.getElementById('card-' + id).classList.add('flipped');
+            solveCount++;
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
 
-            // Ẩn hộp quà
-            element.classList.add('opened');
-
-            // Hiển thị lời chúc sau 0.5s
-            setTimeout(() => {
-                document.getElementById('wish-text').innerText = wishes[index];
-                document.getElementById('wish-display').style.display = 'block';
-            }, 500);
+            if (solveCount === 3) {
+                setTimeout(() => {
+                    document.getElementById('final-gift').style.display = 'block';
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                }, 1000);
+            }
+        } else {
+            alert("Sai rồi nè! Nhớ lại chút đi mà.");
         }
+    }
 
-        function closeWish() {
-            document.getElementById('wish-display').style.display = 'none';
-        }
+    function showFinal() {
+        document.getElementById('wishModal').style.display = 'flex';
+        confetti({ particleCount: 400, spread: 100, origin: { y: 0.5 } });
+    }
 
-        // Code Tuyết rơi (giữ nguyên từ bản trước)
-        const canvas = document.getElementById('snow-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height, snowflakes = [];
+    // Tuyết rơi không chặn chuột
+    const canvas = document.getElementById('snow');
+    const ctx = canvas.getContext('2d');
+    let w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight;
+    const p = Array.from({length:100}, () => ({x:Math.random()*w, y:Math.random()*h, r:Math.random()*3+1, d:Math.random()*1}));
+    function draw() {
+        ctx.clearRect(0,0,w,h); ctx.fillStyle="white"; ctx.beginPath();
+        p.forEach(s => { ctx.moveTo(s.x, s.y); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); });
+        ctx.fill();
+        p.forEach(s => { s.y += s.d+1; if(s.y > h) s.y = -10; });
+        requestAnimationFrame(draw);
+    }
+    draw();
+</script>
 
-        function init() {
-            width = window.innerWidth; height = window.innerHeight;
-            canvas.width = width; canvas.height = height;
-            snowflakes = Array.from({ length: 150 }, () => ({
-                x: Math.random() * width, y: Math.random() * height,
-                r: Math.random() * 3 + 1, d: Math.random() * 1
-            }));
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = "white";
-            ctx.beginPath();
-            snowflakes.forEach(s => {
-                ctx.moveTo(s.x, s.y);
-                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-            });
-            ctx.fill();
-            update();
-        }
-
-        function update() {
-            snowflakes.forEach(s => {
-                s.y += Math.pow(s.d, 2) + 1;
-                s.x += Math.sin(s.y / 50);
-                if (s.y > height) s.y = -10, s.x = Math.random() * width;
-            });
-        }
-
-        window.addEventListener('resize', init);
-        init();
-        setInterval(draw, 33);
-    </script>
 </body>
 </html>
